@@ -97,6 +97,7 @@ function App() {
     } else {
       setRequiredGpa(null);
     }
+    console.log(gradePoints);
   };
 
   return (
