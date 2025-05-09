@@ -2,6 +2,20 @@ import { useState } from "react";
 import FootNote from "./FootNote";
 
 function App() {
+  const [gradeMap, setGradeMap] = useState({
+    A: 4.0,
+    "A-": 3.7,
+    "B+": 3.3,
+    B: 3.0,
+    "B-": 2.7,
+    "C+": 2.3,
+    C: 2.0,
+    "C-": 1.7,
+    "D+": 1.3,
+    D: 1.0,
+    F: 0.0,
+  });
+
   const [data, setData] = useState({
     currentCGPA: "",
     creditsCompleted: "",
@@ -12,7 +26,7 @@ function App() {
   const [maxCgpa, setMaxCgpa] = useState(4.0);
   const [targetCgpa, setTargetCgpa] = useState(""); // New state
   const [requiredGpa, setRequiredGpa] = useState(null); // New state
-
+  const [assumedGrade, setAssumedGrade] = useState("A");
   const [courses, setCourses] = useState([
     {
       name: "",
@@ -20,6 +34,8 @@ function App() {
       grade: "",
     },
   ]);
+  const [newGrade, setNewGrade] = useState("");
+  const [newValue, setNewValue] = useState("");
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({
@@ -50,20 +66,6 @@ function App() {
     let totalGradePoints = parseFloat((cgpa * completedCredits).toFixed(2));
     let totalEarnedCredits = completedCredits;
 
-    const gradeMap = {
-      A: 4.0,
-      "A-": 3.7,
-      "B+": 3.3,
-      B: 3.0,
-      "B-": 2.7,
-      "C+": 2.3,
-      C: 2.0,
-      "C-": 1.7,
-      "D+": 1.3,
-      D: 1.0,
-      F: 0.0,
-    };
-
     courses.forEach((course) => {
       const gradeValue = gradeMap[course.grade.toUpperCase()];
       const creditValue = parseFloat(course.credits);
@@ -73,8 +75,10 @@ function App() {
       }
     });
     const newCGPA = totalGradePoints / totalEarnedCredits;
+    const assumedGradeValue = gradeMap[assumedGrade.toUpperCase()] ?? 4.0;
     const maxPossibleGradePoints =
-      4 * (totalCredits - totalEarnedCredits) + totalGradePoints;
+      assumedGradeValue * (totalCredits - totalEarnedCredits) +
+      totalGradePoints;
     const maxPossibleCGPA = maxPossibleGradePoints / totalCredits;
 
     setGradePoints(parseFloat(totalGradePoints.toFixed(2)));
@@ -208,9 +212,24 @@ function App() {
               Calculate
             </button>
           </div>
-
+          <div className="flex flex-col items-center mb-6">
+            <label className="text-sm mb-1">
+              Assumed Grade for Remaining Courses
+            </label>
+            <select
+              value={assumedGrade}
+              onChange={(e) => setAssumedGrade(e.target.value)}
+              className="px-4 py-2 border border-[#283618] rounded"
+            >
+              {Object.keys(gradeMap).map((grade) => (
+                <option key={grade} value={grade}>
+                  {grade}
+                </option>
+              ))}
+            </select>
+          </div>
           <div className="w-full max-w-2xl mt-10 px-6 py-4 bg-[#fefae0]">
-            <h2 className="text-xl font-semibold text-center text-[#283618] mb-4">
+            <h2 className="text-3xl font-semibold text-center text-[#283618] mb-4">
               Results
             </h2>
             <div className="flex flex-col sm:flex-row justify-between items-end gap-6">
@@ -233,7 +252,102 @@ function App() {
             </div>
           </div>
         </div>
+        <div className="w-full max-w-2xl mx-auto mt-10 px-6 py-4 ">
+          <h2 className="text-3xl font-semibold text-center text-[#283618] mb-4">
+            Editable Grade Mapping
+          </h2>
+          <table className="w-full border-2 border-[#283618]">
+            <thead className="">
+              <tr>
+                <th className="border border-[#283618] p-2">GPA Value</th>
+                <th className="border border-[#283618] p-2">Grade</th>
+                <th className="border border-[#283618] p-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(gradeMap).map(([grade, value]) => (
+                <tr key={grade}>
+                  <td className="border p-2 border-[#283618]">
+                    <input
+                      type="text"
+                      value={grade}
+                      disabled
+                      className="w-full p-1 border rounded bg-gray-100"
+                    />
+                  </td>
+                  <td className="border p-2 border-[#283618]">
+                    <input
+                      type="number"
+                      value={value}
+                      min="0"
+                      max="4"
+                      step="0.1"
+                      onChange={(e) => {
+                        const updatedMap = { ...gradeMap };
+                        updatedMap[grade] = parseFloat(e.target.value);
+                        setGradeMap(updatedMap);
+                      }}
+                      className="w-full p-1 border rounded"
+                    />
+                  </td>
+                  <td className="border p-2 text-center text-red-600 border-[#283618]">
+                    <button
+                      onClick={() => {
+                        const updatedMap = { ...gradeMap };
+                        delete updatedMap[grade];
+                        setGradeMap(updatedMap);
+                      }}
+                    >
+                      ❌
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              <tr>
+                <td className="border p-2 border-[#283618]">
+                  <input
+                    type="text"
+                    placeholder="New Grade"
+                    value={newGrade}
+                    onChange={(e) => setNewGrade(e.target.value.toUpperCase())}
+                    className="w-full p-1 border rounded"
+                  />
+                </td>
+                <td className="border p-2 border-[#283618]">
+                  <input
+                    type="number"
+                    placeholder="GPA"
+                    min="0"
+                    max="4"
+                    step="0.1"
+                    value={newValue}
+                    onChange={(e) => setNewValue(e.target.value)}
+                    className="w-full p-1 border rounded"
+                  />
+                </td>
+                <td className="border p-2 text-center">
+                  <button
+                    onClick={() => {
+                      if (newGrade && !isNaN(parseFloat(newValue))) {
+                        setGradeMap({
+                          ...gradeMap,
+                          [newGrade]: parseFloat(newValue),
+                        });
+                        setNewGrade("");
+                        setNewValue("");
+                      }
+                    }}
+                    className="text-green-600"
+                  >
+                    ➕
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </main>
+
       <FootNote />
     </div>
   );
