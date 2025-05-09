@@ -20,7 +20,6 @@ function App() {
       grade: "",
     },
   ]);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({
@@ -73,10 +72,9 @@ function App() {
         totalEarnedCredits += creditValue;
       }
     });
-
     const newCGPA = totalGradePoints / totalEarnedCredits;
     const maxPossibleGradePoints =
-      4.0 * (totalCredits - totalEarnedCredits) + totalGradePoints;
+      4 * (totalCredits - totalEarnedCredits) + totalGradePoints;
     const maxPossibleCGPA = maxPossibleGradePoints / totalCredits;
 
     setGradePoints(parseFloat(totalGradePoints.toFixed(2)));
@@ -194,7 +192,7 @@ function App() {
             </div>
           </div>
 
-          <div className="w-1/3 flex flex-row justify-center sm:justify-between">
+          <div className="w-1/3 flex flex-row justify-center ">
             <button
               type="submit"
               onClick={addCourse}
