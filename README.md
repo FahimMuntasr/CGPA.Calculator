@@ -13,5 +13,5 @@
 #### Capabilities
 
 - Calculate current CGPA
-- Calculate future grade requirements to achieve a target CGPA by graduation, also show number of retakes (if necessary) needed to hit target
+- Calculate future grade requirements to achieve a target CGPA by graduation
 - Predict maximum possible CGPA by graduation based on current CGPA
