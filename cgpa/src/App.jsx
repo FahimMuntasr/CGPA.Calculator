@@ -2,6 +2,7 @@ import { useState } from "react";
 import FootNote from "./FootNote";
 
 function App() {
+  console.log("Hello world");
   const [gradeMap, setGradeMap] = useState({
     A: 4.0,
     "A-": 3.7,
